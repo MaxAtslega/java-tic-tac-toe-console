@@ -1,61 +1,128 @@
 package de.atslega.jtttc;
 
+import de.atslega.jtttc.dto.Character;
+import de.atslega.jtttc.dto.GameMap;
+import de.atslega.jtttc.dto.Player;
+
 import java.util.Scanner;
 
-import static de.atslega.jtttc.utils.Player.O_CHARACTER;
-import static de.atslega.jtttc.utils.Player.X_CHARACTER;
 import static java.lang.Thread.sleep;
 
 public class Main {
     static char[] alphabetString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
     static String GAP = "   ";
-
     private static Scanner scanner;
+    public static final String[] languages = new String[]{"de", "en"};
+    public static GameMap gameMap;
 
     public static void main(String[] args) {
-        printHeadline();
-
         scanner = new Scanner(System.in);
+
+        printHeadline();
 
         int mapSize = askMapSize();
         int roundsNumber = askRoundNumber();
 
-        int player1Character = askPlayer1Character();
-        int player2Character = player1Character == 1 ? O_CHARACTER : X_CHARACTER;
+        String player1Name = askPlayerName(1);
+        String player2Name = askPlayerName(2);
+
+        Character player1Character = askPlayer1Character();
+        Character player2Character = player1Character == Character.X_CHARACTER ? Character.O_CHARACTER : Character.X_CHARACTER;
+
+        Player player1 = new Player(player1Character, 0, player1Name);
+        Player player2 = new Player(player2Character, 0, player2Name);
 
         System.out.println();
 
-        System.out.println("Spieler 1 hat: " + (player1Character == O_CHARACTER ? "o" : "x"));
-        System.out.println("Spieler 2 hat: " + (player2Character == O_CHARACTER ? "o" : "x"));
+        System.out.println("Spieler " + player1.getName() + " hat: " + (player1Character.getCharacterIcon()));
+        System.out.println("Spieler " + player2.getName() + " hat: " + (player2Character.getCharacterIcon()));
 
         System.out.println();
 
-        //runCountdown();
+        System.out.print("Spiel startet in: ");
+        runCountdown();
 
-        Map.clearConsole();
+        clearConsole();
 
-        Map map = new Map(mapSize);
-        map.printMap();
+        gameMap = new GameMap(mapSize, mapSize, player1, player2);
 
-        int winnerOfTTT = 0;
+        for (int i = 1; i <= roundsNumber; i++) {
+            gameMap.setNowRound(i);
 
-        do {
-            playField(map, player1Character);
-            int winner = map.getWinner();
-            if (winner != 0){
-                winnerOfTTT = winner;
-            } else {
-                playField(map, player2Character);
-                int winner2 = map.getWinner();
-                if (winner2 != 0){
-                    winnerOfTTT = winner2;
+            Game game = new Game(gameMap);
+            game.printMap();
+
+            Player winner = null;
+
+            do {
+                playField(player1);
+                clearConsole();
+                game.printMap();
+
+                Character winner1Character = game.getWinner();
+                if (winner1Character != null) {
+                    winner = winner1Character == player1.getCharacter() ? player1 : player2;
+                } else {
+                    playField(player2);
+                    clearConsole();
+                    game.printMap();
+
+                    Character winner2Character = game.getWinner();
+                    if (winner2Character != null) {
+                        winner = winner2Character == player1.getCharacter() ? player1 : player2;
+                    }
                 }
+            } while (winner == null);
+
+            System.out.println("\n" + GAP + "Der Gewinner ist Spieler " + (winner.getName()));
+            winner.setScore(winner.getScore()+1);
+
+            gameMap.clearGameMap();
+
+            clearConsole();
+
+            if(i != roundsNumber){
+                System.out.print("Nächste Runde startet in: ");
+                runCountdown();
+                clearConsole();
+            } else {
+                if (player1.getScore() == player2.getScore()){
+                    System.out.print("Das Spiel ist vorbei! Es ist unentschieden.");
+                } else {
+                    if (player1.getScore() > player2.getScore()) {
+                        System.out.print("Das Spiel ist vorbei! '"+player1.getName()+"' hat das Spiel gewonnen.");
+                    } else {
+                        System.out.print("Das Spiel ist vorbei! '"+player2.getName()+"' hat das Spiel gewonnen.");
+                    }
+
+                }
+
             }
-        } while (winnerOfTTT == 0);
 
-        System.out.println("\n"+GAP+"Der Gewinner ist Spieler '"+(winnerOfTTT == O_CHARACTER ? "o'" : "x'"));
+        }
+    }
 
+    private static void getWinnerOfGame(Player player1, Player player2){
 
+    }
+
+    public static void clearConsole() {
+        try {
+            String operatingSystem = System.getProperty("os.name"); //Check the current operating system
+
+            if (operatingSystem.contains("Windows")) {
+                ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "cls");
+                Process startProcess = pb.inheritIO().start();
+                startProcess.waitFor();
+            } else {
+                ProcessBuilder pb = new ProcessBuilder("clear");
+                Process startProcess = pb.inheritIO().start();
+
+                startProcess.waitFor();
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 
     public static void printHeadline() {
@@ -64,19 +131,32 @@ public class Main {
                 "  / /   / /   / /_  / / \n" +
                 " / /   / /   / / /_/ /  \n" +
                 "/_/   /_/   /_/\\____/   ");
-        System.out.println("Game by Max Atslega and Felix Menze. \n");
+        System.out.println("Spiel von Max Atslega und Felix Menze" + " \n");
+    }
+
+    private static String convertStringArrayToString(String[] strArr, String delimiter) {
+        StringBuilder sb = new StringBuilder();
+        for (String str : strArr)
+            sb.append(str).append(delimiter);
+        return sb.substring(0, sb.length() - 1);
     }
 
     public static int askMapSize() {
         int mapSize = 0;
         do {
-            System.out.print("Wie groß soll das Feld sein (Min: 3x3; Max: 26x26)? ");
+            System.out.print("Wie groß soll das Feld sein (Min: 3x3; Max: 26x26) (Standard: 3x3)? ");
             try {
-                mapSize = Integer.parseInt(scanner.nextLine());
+                String mapSizeAsString = scanner.nextLine();
 
-                if (mapSize > 26 || mapSize < 3) {
-                    System.out.println("Das Feld muss mindestens 3x3 und maximal 26x26 groß sein.");
+                if (!mapSizeAsString.isEmpty()) {
+                    mapSize = Integer.parseInt(mapSizeAsString);
+                    if (mapSize > 26 || mapSize < 3) {
+                        System.out.println("Das Feld muss mindestens 3x3 und maximal 26x26 groß sein.");
+                    }
+                } else {
+                    mapSize = 3;
                 }
+
             } catch (Exception ex) {
                 System.out.println("Du kannst nur Nummern eingeben.");
             }
@@ -89,40 +169,55 @@ public class Main {
         int rounds = 0;
         do {
             try {
-                System.out.print("Wie viele Runden möchtest du Spielen (Min: 3)? ");
-                rounds = Integer.parseInt(scanner.nextLine());
-
-                if (rounds < 3) {
-                    System.out.println("Du kannst nicht weniger als 3 Runden spielen.");
+                System.out.print("Wie viele Runden möchtest du Spielen (Min: 2) (Standard: 3)? ");
+                String roundAsString = scanner.nextLine();
+                if (!roundAsString.isEmpty()) {
+                    rounds = Integer.parseInt(scanner.nextLine());
+                    if (rounds < 2) {
+                        System.out.println("Du kannst nicht weniger als 2 Runden spielen.");
+                    }
+                } else {
+                    rounds = 2;
                 }
+
             } catch (Exception ex) {
                 System.out.println("Du kannst nur Nummern eingeben.");
             }
-        } while (rounds < 3);
+        } while (rounds < 2);
 
         return rounds;
     }
 
-    public static int askPlayer1Character() {
+    public static Character askPlayer1Character() {
         String character;
         do {
-            System.out.print("Spieler 1: Wähle deine Figure zwischen 'o' und 'x': ");
+            System.out.print("Spieler 1: Wähle deine Figure zwischen 'o' und 'x' (Standard: 'o'): ");
             character = scanner.nextLine();
 
-            if (!character.equals("o") && !character.equals("x")) {
-                System.out.println("Du kannst nur zwischen 'o' oder 'x' wählen.");
+            if (!character.isEmpty()) {
+                if (Character.fromString(character) == null) {
+                    System.out.println("Du kannst nur zwischen 'o' oder 'x' wählen.");
+                }
+            } else {
+                character = "o";
             }
-        } while (!character.equals("o") && !character.equals("x"));
 
-        if (character.equals("o")) {
-            return O_CHARACTER;
-        }
+        } while (Character.fromString(character) == null);
 
-        return X_CHARACTER;
+        return Character.fromString(character);
+    }
+
+    public static String askPlayerName(int number) {
+        String name;
+        do {
+            System.out.print("Spieler " + number + ": Wähle einen Namen: ");
+            name = scanner.nextLine();
+        } while (name.isEmpty());
+
+        return name;
     }
 
     public static void runCountdown() {
-        System.out.print("Spiel startet in: ");
         for (int i = 10; i >= 1; i--) {
             System.out.print(i + " ");
             try {
@@ -135,7 +230,7 @@ public class Main {
         System.out.println("Start! \n");
     }
 
-    public static void playField(Map map, int player) {
+    public static void playField(Player player) {
         boolean wrongInput = false;
 
         int column = -1;
@@ -143,26 +238,26 @@ public class Main {
 
         do {
             wrongInput = false;
-            String playerIcon = player == O_CHARACTER ? "o" : "x";
+            ;
 
-            System.out.print("\n" + GAP + "Spieler '"+playerIcon+"' wählen Sie ein Feld: ");
+            System.out.print("\n" + GAP + "Spieler '" + player.getName() + "' wählen Sie ein Feld: ");
 
             String[] field = scanner.nextLine().split("");
 
             if (field.length == 2) {
                 for (int i = 0; i < alphabetString.length; i++) {
-                    if (Character.toString(alphabetString[i]).equals(field[0].toUpperCase())) {
+                    if (java.lang.Character.toString(alphabetString[i]).equals(field[0].toUpperCase())) {
                         column = i;
                     }
                 }
-                if (column == -1 || (column + 1) > map.mapSize) {
+                if (column == -1 || (column + 1) > gameMap.getGameMap().length) {
                     wrongInput = true;
                     System.out.print(GAP + "Das Feld existiert nicht.");
                 } else {
                     try {
                         row = Integer.parseInt(field[1]);
 
-                        if (row > map.mapSize) {
+                        if (row > gameMap.getGameMap().length) {
                             System.out.print(GAP + "Das Feld existiert nicht.");
                             wrongInput = true;
                         }
@@ -172,7 +267,7 @@ public class Main {
                         wrongInput = true;
                     }
 
-                    if (!map.isFieldFree(column, row)) {
+                    if (!gameMap.isFieldFree(column, row)) {
                         System.out.print(GAP + "Das Feld ist bereits belegt.");
                         wrongInput = true;
                     }
@@ -183,7 +278,7 @@ public class Main {
             }
         } while (wrongInput);
 
-        map.setField(player, column, row);
+        gameMap.setField(player, column, row);
     }
 
 }
