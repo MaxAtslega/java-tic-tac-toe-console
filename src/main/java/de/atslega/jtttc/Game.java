@@ -1,9 +1,5 @@
 package de.atslega.jtttc;
 
-import de.atslega.jtttc.dto.Character;
-import de.atslega.jtttc.dto.GameMap;
-import de.atslega.jtttc.dto.Player;
-
 public class Game {
 
     GameMap gameMap;

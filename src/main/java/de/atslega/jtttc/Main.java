@@ -1,9 +1,5 @@
 package de.atslega.jtttc;
 
-import de.atslega.jtttc.dto.Character;
-import de.atslega.jtttc.dto.GameMap;
-import de.atslega.jtttc.dto.Player;
-
 import java.util.Scanner;
 
 import static java.lang.Thread.sleep;
@@ -54,34 +50,51 @@ public class Main {
 
             Player winner = null;
 
+            int count = 0;
+            boolean indecisive = false;
+
             do {
-                playField(player1);
-                clearConsole();
-                game.printMap();
+                playField(player1, game);
+                count++;
 
-                Character winner1Character = game.getWinner();
-                if (winner1Character != null) {
-                    winner = winner1Character == player1.getCharacter() ? player1 : player2;
-                } else {
-                    playField(player2);
-                    clearConsole();
-                    game.printMap();
+                if (count != mapSize * mapSize) {
+                    Character winner1Character = game.getWinner();
+                    if (winner1Character != null) {
+                        winner = winner1Character == player1.getCharacter() ? player1 : player2;
+                    } else {
+                        playField(player2, game);
+                        count++;
 
-                    Character winner2Character = game.getWinner();
-                    if (winner2Character != null) {
-                        winner = winner2Character == player1.getCharacter() ? player1 : player2;
+                        if (count != mapSize * mapSize) {
+                            Character winner2Character = game.getWinner();
+                            if (winner2Character != null) {
+                                winner = winner2Character == player1.getCharacter() ? player1 : player2;
+                            }
+                        } else {
+                            indecisive = true;
+                        }
+
                     }
+                } else {
+                    indecisive = true;
                 }
-            } while (winner == null);
+            } while (winner == null && !indecisive);
 
-            System.out.println("\n" + GAP + "Der Gewinner ist Spieler " + (winner.getName()));
-            winner.setScore(winner.getScore()+1);
+            if (!indecisive) {
+                System.out.println("\n" + GAP + "Der Gewinner ist '" + (winner.getName()) + "'");
+                winner.setScore(winner.getScore() + 1);
+            } else {
+                System.out.println("\n" + GAP + "Die Runde ist unentschieden. Beide bekommen ein Punkt.");
+                player1.setScore(player1.getScore() + 1);
+                player2.setScore(player2.getScore() + 1);
+            }
+
 
             gameMap.clearGameMap();
 
             clearConsole();
 
-            if(i != roundsNumber){
+            if (i != roundsNumber) {
                 System.out.print("Nächste Runde startet in: ");
                 runCountdown();
                 clearConsole();
@@ -168,21 +181,20 @@ public class Main {
     public static int askRoundNumber() {
         int rounds = 0;
         do {
-            try {
                 System.out.print("Wie viele Runden möchtest du Spielen (Min: 2) (Standard: 3)? ");
                 String roundAsString = scanner.nextLine();
                 if (!roundAsString.isEmpty()) {
-                    rounds = Integer.parseInt(scanner.nextLine());
-                    if (rounds < 2) {
-                        System.out.println("Du kannst nicht weniger als 2 Runden spielen.");
+                    try {
+                        rounds = Integer.parseInt(roundAsString);
+                        if (rounds < 2) {
+                            System.out.println("Du kannst nicht weniger als 2 Runden spielen.");
+                        }
+                    } catch (Exception ex) {
+                        System.out.println("Du kannst nur Nummern eingeben.");
                     }
                 } else {
                     rounds = 2;
                 }
-
-            } catch (Exception ex) {
-                System.out.println("Du kannst nur Nummern eingeben.");
-            }
         } while (rounds < 2);
 
         return rounds;
@@ -230,7 +242,7 @@ public class Main {
         System.out.println("Start! \n");
     }
 
-    public static void playField(Player player) {
+    public static void playField(Player player, Game game) {
         boolean wrongInput = false;
 
         int column = -1;
@@ -279,6 +291,9 @@ public class Main {
         } while (wrongInput);
 
         gameMap.setField(player, column, row);
+
+        clearConsole();
+        game.printMap();
     }
 
 }

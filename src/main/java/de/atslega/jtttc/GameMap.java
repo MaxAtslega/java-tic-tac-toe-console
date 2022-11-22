@@ -1,4 +1,4 @@
-package de.atslega.jtttc.dto;
+package de.atslega.jtttc;
 
 public class GameMap {
     private int MAP_W = 3;
