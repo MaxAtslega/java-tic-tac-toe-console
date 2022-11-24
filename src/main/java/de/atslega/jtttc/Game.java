@@ -60,7 +60,7 @@ public class Game {
 
         printSeparator();
         if (gameMap.getGameMap().length < 4) {
-            System.out.print("   Round: 1\n");
+            System.out.print("   Round: " + gameMap.getNowRound() + "\n");
         }
 
     }
@@ -241,30 +241,35 @@ public class Game {
             }
         } while (winner == null && !indecisive);
 
+
         if (!indecisive) {
-            System.out.println("\n" + GAP + "Der Gewinner ist '" + (winner.getName()) + "'");
             winner.setScore(winner.getScore() + 1);
+            clearConsole();
+            printMap();
+
+            System.out.println("\n" + GAP + "Der Gewinner ist '" + (winner.getName()) + "'");
         } else {
-            System.out.println("\n" + GAP + "Die Runde ist unentschieden. Beide bekommen ein Punkt.");
             player1.setScore(player1.getScore() + 1);
             player2.setScore(player2.getScore() + 1);
+            clearConsole();
+            printMap();
+
+            System.out.println("\n" + GAP + "Die Runde ist unentschieden. Beide bekommen ein Punkt.");
         }
 
         gameMap.clearGameMap();
 
-        clearConsole();
-
         if (currentRound != roundsNumber) {
-            runCountdown("Nächste Runde startet in: ");
+            runCountdown("\n" + GAP + "Nächste Runde startet in: ");
             clearConsole();
         } else {
             if (player1.getScore() == player2.getScore()) {
-                System.out.println("Das Spiel ist vorbei! Es ist unentschieden.");
+                System.out.println("\n" + GAP + "Das Spiel ist vorbei! Es ist unentschieden.");
             } else {
                 if (player1.getScore() > player2.getScore()) {
-                    System.out.println("Das Spiel ist vorbei! '" + player1.getName() + "' hat das Spiel gewonnen.");
+                    System.out.println("\n" + GAP + "Das Spiel ist vorbei! '" + player1.getName() + "' hat das Spiel gewonnen.");
                 } else {
-                    System.out.println("Das Spiel ist vorbei! '" + player2.getName() + "' hat das Spiel gewonnen.");
+                    System.out.println("\n" + GAP + "Das Spiel ist vorbei! '" + player2.getName() + "' hat das Spiel gewonnen.");
                 }
 
             }

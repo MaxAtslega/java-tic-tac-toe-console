@@ -142,7 +142,7 @@ public class Main {
         boolean newGame = false;
         boolean wrongInput = false;
         do {
-            System.out.print("Willst du eine neuen Runde spielen? ('Ja' oder 'Nein') (Standard: 'Ja'): ");
+            System.out.print(GAP + "Willst du eine neuen Runde spielen? ('Ja' oder 'Nein') (Standard: 'Ja'): ");
             String answer = scanner.nextLine();
 
             if (!answer.isEmpty()) {
@@ -153,7 +153,7 @@ public class Main {
                 } else if (answer != "NEIN") {
                     newGame = false;
                 } else {
-                    System.out.print("Du kannst nur zwischen 'Ja' und 'Nein' auswählen: ");
+                    System.out.print(GAP + "Du kannst nur zwischen 'Ja' und 'Nein' auswählen: ");
                     wrongInput = true;
                 }
             } else {
@@ -168,7 +168,7 @@ public class Main {
     public static Character askPlayer1Character() {
         String character;
         do {
-            System.out.print("Spieler 1: Wähle deine Figure zwischen 'o' und 'x' (Standard: 'o'): ");
+            System.out.print("Spieler 1: Wähle deine Figure: 'o' oder 'x' (Standard: 'o'): ");
             character = scanner.nextLine();
 
             if (!character.isEmpty()) {
