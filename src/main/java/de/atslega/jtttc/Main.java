@@ -10,10 +10,10 @@ import static java.lang.Thread.sleep;
  * - Kommentare
  */
 public class Main {
+    public static GameMap gameMap;
     static char[] alphabetString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
     static String GAP = "   ";
     private static Scanner scanner;
-    public static GameMap gameMap;
 
     public static void main(String[] args) {
         scanner = new Scanner(System.in);
@@ -119,20 +119,20 @@ public class Main {
     public static int askRoundNumber() {
         int rounds = 0;
         do {
-                System.out.print("Wie viele Runden möchtest du Spielen (Min: 2) (Standard: 3)? ");
-                String roundAsString = scanner.nextLine();
-                if (!roundAsString.isEmpty()) {
-                    try {
-                        rounds = Integer.parseInt(roundAsString);
-                        if (rounds < 2) {
-                            System.out.println("Du kannst nicht weniger als 2 Runden spielen.");
-                        }
-                    } catch (Exception ex) {
-                        System.out.println("Du kannst nur Nummern eingeben.");
+            System.out.print("Wie viele Runden möchtest du Spielen (Min: 2) (Standard: 3)? ");
+            String roundAsString = scanner.nextLine();
+            if (!roundAsString.isEmpty()) {
+                try {
+                    rounds = Integer.parseInt(roundAsString);
+                    if (rounds < 2) {
+                        System.out.println("Du kannst nicht weniger als 2 Runden spielen.");
                     }
-                } else {
-                    rounds = 2;
+                } catch (Exception ex) {
+                    System.out.println("Du kannst nur Nummern eingeben.");
                 }
+            } else {
+                rounds = 2;
+            }
         } while (rounds < 2);
 
         return rounds;
@@ -146,16 +146,16 @@ public class Main {
             String answer = scanner.nextLine();
 
             if (!answer.isEmpty()) {
-                 answer = answer.toUpperCase();
+                answer = answer.toUpperCase();
 
-                 if(answer == "JA") {
-                     newGame = true;
-                 } else if (answer != "NEIN") {
-                     newGame = false;
-                 } else {
-                     System.out.print("Du kannst nur zwischen 'Ja' und 'Nein' auswählen: ");
-                     wrongInput = true;
-                 }
+                if (answer == "JA") {
+                    newGame = true;
+                } else if (answer != "NEIN") {
+                    newGame = false;
+                } else {
+                    System.out.print("Du kannst nur zwischen 'Ja' und 'Nein' auswählen: ");
+                    wrongInput = true;
+                }
             } else {
                 newGame = true;
             }

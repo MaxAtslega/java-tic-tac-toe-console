@@ -1,13 +1,11 @@
 package de.atslega.jtttc;
 
 public class GameMap {
+    private final Player player1;
+    private final Player player2;
     private int MAP_W = 3;
     private int MAP_H = 3;
     private int nowRound;
-
-    private final Player player1;
-    private final Player player2;
-
     private int[][] gameMap;
 
     public GameMap(int map_w, int map_h, Player player1, Player player2) {
@@ -49,15 +47,15 @@ public class GameMap {
         return nowRound;
     }
 
+    public void setNowRound(int nowRound) {
+        this.nowRound = nowRound;
+    }
+
     public Player getPlayer1() {
         return player1;
     }
 
     public Player getPlayer2() {
         return player2;
-    }
-
-    public void setNowRound(int nowRound) {
-        this.nowRound = nowRound;
     }
 }

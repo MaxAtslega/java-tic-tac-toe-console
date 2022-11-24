@@ -47,8 +47,10 @@ public class Game {
                 }
             }
             switch (i) {
-                case 0 -> System.out.print("   "+gameMap.getPlayer1().getName()+" Score: " + gameMap.getPlayer1().getScore());
-                case 1 -> System.out.print("   "+gameMap.getPlayer2().getName()+" Score: " + gameMap.getPlayer2().getScore());
+                case 0 ->
+                        System.out.print("   " + gameMap.getPlayer1().getName() + " Score: " + gameMap.getPlayer1().getScore());
+                case 1 ->
+                        System.out.print("   " + gameMap.getPlayer2().getName() + " Score: " + gameMap.getPlayer2().getScore());
                 case 3 -> {
                     if (gameMap.getGameMap().length > 3) System.out.print("   Round: " + gameMap.getNowRound());
                 }
@@ -86,7 +88,7 @@ public class Game {
         for (int i = 0; i < gameMap.getGameMap().length; i++) {
             StringBuilder horizontalString = new StringBuilder();
             for (int j = 0; j < gameMap.getGameMap().length; j++) {
-                int x = gameMap.getGameMap().length-1-j;
+                int x = gameMap.getGameMap().length - 1 - j;
 
                 horizontalString.append(gameMap.getGameMap()[i][j]);
 
@@ -98,35 +100,37 @@ public class Game {
 
                 try {
                     if (diagonally1[i] != null) {
-                        diagonally1[i] = diagonally1[i] + gameMap.getGameMap()[j][i+j];
+                        diagonally1[i] = diagonally1[i] + gameMap.getGameMap()[j][i + j];
                     } else {
-                        diagonally1[i] = String.valueOf(gameMap.getGameMap()[j][i+j]);
+                        diagonally1[i] = String.valueOf(gameMap.getGameMap()[j][i + j]);
                     }
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
 
                 try {
                     if (diagonally2[i] != null) {
-                        diagonally2[i] = diagonally2[i] + gameMap.getGameMap()[x][i-x];
+                        diagonally2[i] = diagonally2[i] + gameMap.getGameMap()[x][i - x];
                     } else {
-                        diagonally2[i] = String.valueOf(gameMap.getGameMap()[x][i-x]);
+                        diagonally2[i] = String.valueOf(gameMap.getGameMap()[x][i - x]);
                     }
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
             }
             horizontal[i] = horizontalString.toString();
         }
 
         for (int i = 0; i < gameMap.getGameMap().length; i++) {
-            if(diagonally1[i] != null && diagonally1[i].contains("111")) return Character.X_CHARACTER;
-            if(diagonally1[i] != null && diagonally1[i].contains("222")) return Character.O_CHARACTER;
+            if (diagonally1[i] != null && diagonally1[i].contains("111")) return Character.X_CHARACTER;
+            if (diagonally1[i] != null && diagonally1[i].contains("222")) return Character.O_CHARACTER;
 
-            if(diagonally2[i] != null && diagonally2[i].contains("111")) return Character.X_CHARACTER;
-            if(diagonally2[i] != null && diagonally2[i].contains("222")) return Character.O_CHARACTER;
+            if (diagonally2[i] != null && diagonally2[i].contains("111")) return Character.X_CHARACTER;
+            if (diagonally2[i] != null && diagonally2[i].contains("222")) return Character.O_CHARACTER;
 
-            if(horizontal[i] != null && horizontal[i].contains("111")) return Character.X_CHARACTER;
-            if(horizontal[i] != null && horizontal[i].contains("222")) return Character.O_CHARACTER;
+            if (horizontal[i] != null && horizontal[i].contains("111")) return Character.X_CHARACTER;
+            if (horizontal[i] != null && horizontal[i].contains("222")) return Character.O_CHARACTER;
 
-            if(vertical[i] != null && vertical[i].contains("111")) return Character.X_CHARACTER;
-            if(vertical[i] != null && vertical[i].contains("222")) return Character.O_CHARACTER;
+            if (vertical[i] != null && vertical[i].contains("111")) return Character.X_CHARACTER;
+            if (vertical[i] != null && vertical[i].contains("222")) return Character.O_CHARACTER;
         }
 
 
@@ -142,7 +146,6 @@ public class Game {
 
         do {
             wrongInput = false;
-            ;
 
             System.out.print("\n" + GAP + "'" + player.getName() + "' wähle ein Feld: ");
 
@@ -177,8 +180,8 @@ public class Game {
                         wrongInput = true;
                     }
                 }
-            } else if (fieldSplit.length == 4){
-                if (field.toUpperCase().equals("SKIP")){
+            } else if (fieldSplit.length == 4) {
+                if (field.equalsIgnoreCase("SKIP")) {
                     skip = true;
                 }
             } else {
@@ -187,7 +190,7 @@ public class Game {
             }
         } while (wrongInput);
 
-        if (!skip){
+        if (!skip) {
             gameMap.setField(player, column, row);
 
             clearConsole();
@@ -199,7 +202,7 @@ public class Game {
         return false;
     }
 
-    public void playRound(int currentRound, int roundsNumber){
+    public void playRound(int currentRound, int roundsNumber) {
         gameMap.setNowRound(currentRound);
         printMap();
 
@@ -255,13 +258,13 @@ public class Game {
             runCountdown("Nächste Runde startet in: ");
             clearConsole();
         } else {
-            if (player1.getScore() == player2.getScore()){
+            if (player1.getScore() == player2.getScore()) {
                 System.out.println("Das Spiel ist vorbei! Es ist unentschieden.");
             } else {
                 if (player1.getScore() > player2.getScore()) {
-                    System.out.println("Das Spiel ist vorbei! '"+player1.getName()+"' hat das Spiel gewonnen.");
+                    System.out.println("Das Spiel ist vorbei! '" + player1.getName() + "' hat das Spiel gewonnen.");
                 } else {
-                    System.out.println("Das Spiel ist vorbei! '"+player2.getName()+"' hat das Spiel gewonnen.");
+                    System.out.println("Das Spiel ist vorbei! '" + player2.getName() + "' hat das Spiel gewonnen.");
                 }
 
             }
