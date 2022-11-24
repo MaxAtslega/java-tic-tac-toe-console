@@ -20,6 +20,7 @@ public class Main {
 
         printHeadline();
 
+        // ask game settings
         int mapSize = askMapSize();
         int roundsNumber = askRoundNumber();
 
@@ -29,16 +30,19 @@ public class Main {
         Character player1Character = askPlayer1Character();
         Character player2Character = player1Character == Character.X_CHARACTER ? Character.O_CHARACTER : Character.X_CHARACTER;
 
+        // create players
         Player player1 = new Player(player1Character, 0, player1Name);
         Player player2 = new Player(player2Character, 0, player2Name);
 
         System.out.println();
 
+        // print player character
         System.out.println("Spieler " + player1.getName() + " hat: " + (player1Character.getCharacterIcon()));
         System.out.println("Spieler " + player2.getName() + " hat: " + (player2Character.getCharacterIcon()));
 
         System.out.println();
 
+        // start game
         boolean newGame = false;
         do {
             newGame = false;
@@ -49,6 +53,7 @@ public class Main {
 
             gameMap = new GameMap(mapSize, mapSize, player1, player2);
 
+            // start rounds
             for (int currentRound = 1; currentRound <= roundsNumber; currentRound++) {
                 Game game = new Game(gameMap, scanner);
                 game.playRound(currentRound, roundsNumber);

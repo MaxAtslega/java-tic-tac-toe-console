@@ -21,7 +21,7 @@ public class Game {
         this.player2 = gameMap.getPlayer2();
     }
 
-    //make map and show score
+    //print the map and show the score and the current round
     public void printMap() {
         System.out.print("     ");
         for (int i = 0; i < gameMap.getGameMap()[0].length; i++) {
@@ -63,7 +63,6 @@ public class Game {
 
     }
 
-    //create play field
     private void printSeparator() {
         System.out.print("   |");
 
@@ -87,6 +86,8 @@ public class Game {
         for (int i = 0; i < gameMap.getGameMap().length; i++) {
             StringBuilder horizontalString = new StringBuilder();
             for (int j = 0; j < gameMap.getGameMap().length; j++) {
+                int x = gameMap.getGameMap().length-1-j;
+
                 horizontalString.append(gameMap.getGameMap()[i][j]);
 
                 if (vertical[j] != null) {
@@ -102,22 +103,17 @@ public class Game {
                         diagonally1[i] = String.valueOf(gameMap.getGameMap()[j][i+j]);
                     }
                 } catch (Exception ignored) {}
-            }
-            horizontal[i] = horizontalString.toString();
-        }
 
-        for (int x = 0; x < gameMap.getGameMap().length; x++) {
-            for (int i = gameMap.getGameMap().length-1; i >= 0; i--) {
                 try {
-                    if (diagonally2[x] != null) {
-                        diagonally2[x] = diagonally2[x] + gameMap.getGameMap()[i][x-i];
+                    if (diagonally2[i] != null) {
+                        diagonally2[i] = diagonally2[i] + gameMap.getGameMap()[x][i-x];
                     } else {
-                        diagonally2[x] = String.valueOf(gameMap.getGameMap()[i][x-i]);
+                        diagonally2[i] = String.valueOf(gameMap.getGameMap()[x][i-x]);
                     }
                 } catch (Exception ignored) {}
             }
+            horizontal[i] = horizontalString.toString();
         }
-
 
         for (int i = 0; i < gameMap.getGameMap().length; i++) {
             if(diagonally1[i] != null && diagonally1[i].contains("111")) return Character.X_CHARACTER;
