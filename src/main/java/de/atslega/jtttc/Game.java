@@ -1,12 +1,24 @@
 package de.atslega.jtttc;
 
+import java.util.Scanner;
+
+import static de.atslega.jtttc.Main.*;
+
 public class Game {
 
     GameMap gameMap;
+    Scanner scanner;
     char[] alphabetString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
 
-    public Game(GameMap gameMap) {
+    Player player1;
+    Player player2;
+
+    public Game(GameMap gameMap, Scanner scanner) {
         this.gameMap = gameMap;
+        this.scanner = scanner;
+
+        this.player1 = gameMap.getPlayer1();
+        this.player2 = gameMap.getPlayer2();
     }
 
     //make map and show score
@@ -123,6 +135,142 @@ public class Game {
 
 
         return null;
+    }
+
+    public boolean playField(Player player) {
+        boolean wrongInput = false;
+        boolean skip = false;
+
+        int column = -1;
+        int row = -1;
+
+        do {
+            wrongInput = false;
+            ;
+
+            System.out.print("\n" + GAP + "'" + player.getName() + "' wähle ein Feld: ");
+
+            String field = scanner.nextLine();
+            String[] fieldSplit = field.split("");
+
+            if (fieldSplit.length == 2) {
+                for (int i = 0; i < alphabetString.length; i++) {
+                    if (java.lang.Character.toString(alphabetString[i]).equals(fieldSplit[0].toUpperCase())) {
+                        column = i;
+                    }
+                }
+                if (column == -1 || (column + 1) > gameMap.getGameMap().length) {
+                    wrongInput = true;
+                    System.out.print(GAP + "Das Feld existiert nicht.");
+                } else {
+                    try {
+                        row = Integer.parseInt(fieldSplit[1]);
+
+                        if (row > gameMap.getGameMap().length) {
+                            System.out.print(GAP + "Das Feld existiert nicht.");
+                            wrongInput = true;
+                        }
+                        row--;
+                    } catch (Exception ex) {
+                        System.out.print(GAP + "Das Feld existiert nicht.");
+                        wrongInput = true;
+                    }
+
+                    if (!gameMap.isFieldFree(column, row)) {
+                        System.out.print(GAP + "Das Feld ist bereits belegt.");
+                        wrongInput = true;
+                    }
+                }
+            } else if (fieldSplit.length == 4){
+                if (field.toUpperCase().equals("SKIP")){
+                    skip = true;
+                }
+            } else {
+                System.out.print(GAP + "Das Feld existiert nicht.");
+                wrongInput = true;
+            }
+        } while (wrongInput);
+
+        if (!skip){
+            gameMap.setField(player, column, row);
+
+            clearConsole();
+            printMap();
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public void playRound(int currentRound, int roundsNumber){
+        gameMap.setNowRound(currentRound);
+        printMap();
+
+        int mapHeight = gameMap.getGameMap().length;
+        int mapWeight = gameMap.getGameMap()[0].length;
+
+        Player winner = null;
+
+        int count = 0;
+        boolean indecisive = false;
+
+        do {
+            boolean keepOn = playField(player1);
+            count++;
+
+            if (count != mapWeight * mapHeight && keepOn) {
+                Character winner1Character = getWinner();
+                if (winner1Character != null) {
+                    winner = winner1Character == player1.getCharacter() ? player1 : player2;
+                } else {
+                    boolean keepOn2 = playField(player2);
+                    count++;
+
+                    if (count != mapWeight * mapHeight && keepOn2) {
+                        Character winner2Character = getWinner();
+                        if (winner2Character != null) {
+                            winner = winner2Character == player1.getCharacter() ? player1 : player2;
+                        }
+                    } else {
+                        indecisive = true;
+                    }
+
+                }
+            } else {
+                indecisive = true;
+            }
+        } while (winner == null && !indecisive);
+
+        if (!indecisive) {
+            System.out.println("\n" + GAP + "Der Gewinner ist '" + (winner.getName()) + "'");
+            winner.setScore(winner.getScore() + 1);
+        } else {
+            System.out.println("\n" + GAP + "Die Runde ist unentschieden. Beide bekommen ein Punkt.");
+            player1.setScore(player1.getScore() + 1);
+            player2.setScore(player2.getScore() + 1);
+        }
+
+        gameMap.clearGameMap();
+
+        clearConsole();
+
+        if (currentRound != roundsNumber) {
+            runCountdown("Nächste Runde startet in: ");
+            clearConsole();
+        } else {
+            if (player1.getScore() == player2.getScore()){
+                System.out.println("Das Spiel ist vorbei! Es ist unentschieden.");
+            } else {
+                if (player1.getScore() > player2.getScore()) {
+                    System.out.println("Das Spiel ist vorbei! '"+player1.getName()+"' hat das Spiel gewonnen.");
+                } else {
+                    System.out.println("Das Spiel ist vorbei! '"+player2.getName()+"' hat das Spiel gewonnen.");
+                }
+
+            }
+
+        }
     }
 
 }

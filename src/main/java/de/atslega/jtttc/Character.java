@@ -25,12 +25,4 @@ public enum Character {
             default -> null;
         };
     }
-
-    public static Character fromNumber(int number) {
-        return switch (number) {
-            case 1 -> O_CHARACTER;
-            case 2 -> X_CHARACTER;
-            default -> null;
-        };
-    }
 }
