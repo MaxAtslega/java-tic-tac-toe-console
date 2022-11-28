@@ -9,7 +9,8 @@ import static java.lang.Thread.sleep;
  * - Skip
  * - Kommentare
  */
-public class Main {
+public class
+Main {
     public static GameMap gameMap;
     static char[] alphabetString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
     static String GAP = "   ";
@@ -131,7 +132,7 @@ public class Main {
                     System.out.println("Du kannst nur Nummern eingeben.");
                 }
             } else {
-                rounds = 2;
+                rounds = 3;
             }
         } while (rounds < 2);
 
